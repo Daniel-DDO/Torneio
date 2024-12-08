@@ -5,23 +5,23 @@ import java.util.*;
 public class SorteioEliminatoria {
     public static void main(String[] args) {
         List<TimesEquipes> times = new ArrayList<>(Arrays.asList(
+                new TimesEquipes("BAYERN DE MUNIQUE", "ALE", "@marangoni014", 1),
+                new TimesEquipes("MANCHESTER CITY", "ING", "@toynho96", 1),
                 new TimesEquipes("REAL MADRID", "ESP", "@danielddo", 1),
                 new TimesEquipes("LIVERPOOL", "ING", "@pewternine", 1),
+                new TimesEquipes("MILAN", "ITA", "@glauber760", 1),
+                new TimesEquipes("ARSENAL", "ING", "@astakun1206", 1),
                 new TimesEquipes("REAL MADRID", "ESP", "@indiomala", 1),
-                new TimesEquipes("LIVERPOOL", "ING", "@luishenriquexz", 1),
-                new TimesEquipes("MAN CITY", "ING", "@toynho96", 1),
-                new TimesEquipes("INTER MIAMI", "EUA", "@danielmods", 1),
-                new TimesEquipes("ATLÉTICO MADRID", "ESP", "@freitas777", 1),
-                new TimesEquipes("MAN CITY", "ING", "@ukamuni", 1),
-                new TimesEquipes("MAN CITY", "ING", "@deatchscorpion", 2),
-                new TimesEquipes("BARCELONA", "ESP", "@astakun", 2),
-                new TimesEquipes("ARSENAL", "ING", "@vinimontelo.", 2),
-                new TimesEquipes("FLAMENGO", "BRA", "@sueldoqueiroz", 2),
-                new TimesEquipes("BAYERN MÜNCHEN", "ALE", "@lanzzo", 2),
-                new TimesEquipes("INTER MILÃO", "ITA", "@mardempc", 2),
-                new TimesEquipes("BORUSSIA DORTMUND", "ALE", "@nerd", 2),
-                new TimesEquipes("BARCELONA", "ESP", "@luquinhaa", 2)
-        ));
+                new TimesEquipes("ATLÉTICO DE MADRID", "ESP", "@jwlas.0.__", 1),
+                new TimesEquipes("MANCHESTER CITY", "ING", "@vinimontelo.", 2),
+                new TimesEquipes("ASTON VILLA", "ING", "@thzinnn22k", 2),
+                new TimesEquipes("BAYERN DE MUNIQUE", "ALE", "@luishenriquexz", 2),
+                new TimesEquipes("MANCHESTER UNITED", "ING", "@sueldoqueiroz", 2),
+                new TimesEquipes("BARCELONA", "ESP", "@silva_osk89", 2),
+                new TimesEquipes("PALMEIRAS", "BRA", "@jotace1431_10211", 2),
+                new TimesEquipes("LIVERPOOL", "ING", "@silva99_", 2),
+                new TimesEquipes("FLAMENGO", "BRA", "@danielmods17", 2)
+                ));
 
         List<TimesEquipes> pote1 = new ArrayList<>();
         List<TimesEquipes> pote2 = new ArrayList<>();
@@ -33,6 +33,9 @@ public class SorteioEliminatoria {
                 pote2.add(time);
             }
         }
+
+        shuffleTimes(pote1);
+        shuffleTimes(pote2);
 
         Collections.shuffle(pote1);
         Collections.shuffle(pote2);
@@ -55,4 +58,10 @@ public class SorteioEliminatoria {
             }
         }
     }
+
+    private static void shuffleTimes(List<TimesEquipes> times) {
+        System.out.println("Embaralhando times...");
+        Collections.shuffle(times);
+    }
+
 }
