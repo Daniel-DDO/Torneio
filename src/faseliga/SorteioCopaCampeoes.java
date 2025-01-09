@@ -4,31 +4,164 @@ import java.util.*;
 
 public class SorteioCopaCampeoes {
     public static void main(String[] args) {
+        int sorteioConcluido = 0;
+
+        do {
+            System.out.println("Iniciando tentativa de sorteio...");
+            List<TimesFutebol> times = new ArrayList<>(Arrays.asList(
+                    new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@danielddo"),
+                    new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@deatchscorpion"),
+                    new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@indiomala"),
+                    new TimesFutebol("Manchester City", "Etihad Stadium", "@marangoni014"),
+                    new TimesFutebol("Manchester City", "Etihad Stadium", "@toynho96"),
+                    new TimesFutebol("Barcelona", "Camp Nou", "@silva_osk89"),
+                    new TimesFutebol("Barcelona", "Camp Nou", "@danielmods17"),
+                    new TimesFutebol("Benfica", "Estádio da Luz", "@1_aeon"),
+                    new TimesFutebol("Flamengo", "Maracanã", "@fleeif"),
+                    new TimesFutebol("Paysandu", "Estádio da Curuzu", "@elrafa.07"),
+                    new TimesFutebol("Napoli", "Stadio Diego Armando Maradona", "@mosquitopesedition"),
+                    new TimesFutebol("Inter de Milão", "San Siro", "@gladstoneo085"),
+                    new TimesFutebol("Inter de Milão", "San Siro", "@inoccent_zero_39543"),
+                    new TimesFutebol("Arsenal", "Emirates Stadium", "@glauber760"),
+                    new TimesFutebol("Arsenal", "Emirates Stadium", "@savitar066"),
+                    new TimesFutebol("Bayern de Munique", "Allianz Arena", "@jotace1431_10211"),
+                    new TimesFutebol("Bayern de Munique", "Allianz Arena", "@astakun1206"),
+                    new TimesFutebol("Liverpool", "Anfield", "@luishenriquexz"),
+                    new TimesFutebol("Liverpool", "Anfield", "@pewternine"),
+                    new TimesFutebol("Manchester United", "Old Trafford", "@jpgl_14"),
+                    new TimesFutebol("Al Nassr", "Mrsool Park", "@raiel13"),
+                    new TimesFutebol("Bayer Leverkusen", "BayArena", "@vinimontelo."),
+                    new TimesFutebol("Tottenham", "Tottenham Hotspur Stadium", "@fabiano6784"),
+                    new TimesFutebol("Atlético de Madrid", "Wanda Metropolitano", "@jwlas.0.__")
+            ));
+
+            Collections.shuffle(times, new Random());
+
+            Map<String, Integer> jogosEmCasa = new HashMap<>();
+            Map<String, Integer> jogosFora = new HashMap<>();
+            for (TimesFutebol time : times) {
+                String chave = time.getNome() + " (" + time.getJogador() + ")";
+                jogosEmCasa.put(chave, 0);
+                jogosFora.put(chave, 0);
+            }
+
+            List<Rodada> rodadas = new ArrayList<>();
+            for (int i = 1; i <= 8; i++) {
+                rodadas.add(new Rodada(i));
+            }
+
+            Set<String> confrontosRealizados = new HashSet<>();
+            Random aleatorio = new Random();
+            boolean erroNoSorteio = false;
+
+            for (Rodada rodada : rodadas) {
+                Set<String> timesNaRodada = new HashSet<>();
+                List<TimesFutebol> embaralhados = new ArrayList<>(times);
+                Collections.shuffle(embaralhados, aleatorio);
+
+                int tentativas = 0;
+                while (rodada.getJogos().size() < times.size() / 2) {
+                    tentativas++;
+                    if (tentativas > 1000) {
+                        System.out.println("Erro no sorteio: Limite de tentativas excedido.");
+                        erroNoSorteio = true;
+                        break;
+                    }
+
+                    TimesFutebol timeCasa = embaralhados.get(aleatorio.nextInt(embaralhados.size()));
+                    TimesFutebol timeFora = embaralhados.get(aleatorio.nextInt(embaralhados.size()));
+
+                    if (timeCasa.equals(timeFora)) continue;
+
+                    String chaveCasa = timeCasa.getNome() + " (" + timeCasa.getJogador() + ")";
+                    String chaveFora = timeFora.getNome() + " (" + timeFora.getJogador() + ")";
+                    String confronto = chaveCasa + " x " + chaveFora;
+                    String confrontoInvertido = chaveFora + " x " + chaveCasa;
+
+                    if (confrontosRealizados.contains(confronto) || confrontosRealizados.contains(confrontoInvertido))
+                        continue;
+
+                    if (jogosEmCasa.get(chaveCasa) >= 4 || jogosFora.get(chaveFora) >= 4) continue;
+
+                    if (timesNaRodada.contains(chaveCasa) || timesNaRodada.contains(chaveFora)) continue;
+
+                    confrontosRealizados.add(confronto);
+                    rodada.addJogo(confronto);
+
+                    jogosEmCasa.put(chaveCasa, jogosEmCasa.get(chaveCasa) + 1);
+                    jogosFora.put(chaveFora, jogosFora.get(chaveFora) + 1);
+
+                    timesNaRodada.add(chaveCasa);
+                    timesNaRodada.add(chaveFora);
+                }
+
+                if (erroNoSorteio) break;
+            }
+
+            if (!erroNoSorteio) {
+                sorteioConcluido = 1;
+                System.out.println("\nSorteio concluído com sucesso!");
+                System.out.println("\nJogos por Rodada:");
+                for (Rodada rodada : rodadas) {
+                    System.out.println("\nRodada " + rodada.getNumero() + ":");
+                    for (String jogo : rodada.getJogos()) {
+                        System.out.println(jogo);
+                    }
+                }
+
+                System.out.println("\nResumo de jogos:");
+                for (TimesFutebol time : times) {
+                    String chave = time.getNome() + " (" + time.getJogador() + ")";
+                    System.out.println("\nJogos do " + chave + ":");
+                    for (Rodada rodada : rodadas) {
+                        for (String jogo : rodada.getJogos()) {
+                            if (jogo.contains(chave)) {
+                                System.out.println(jogo);
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Tentando novamente...\n");
+            }
+
+        } while (sorteioConcluido == 0);
+    }
+}
+
+
+/*
+package faseliga;
+
+import java.util.*;
+
+public class SorteioCopaCampeoes {
+    public static void main(String[] args) {
         List<TimesFutebol> times = new ArrayList<>(Arrays.asList(
+                new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@danielddo"),
                 new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@deatchscorpion"),
-                new TimesFutebol("Liverpool", "Anfield", "@silva99_"),
-                new TimesFutebol("Manchester City", "Etihad Stadium", "@indiomala"),
-                new TimesFutebol("Manchester City", "Etihad Stadium", "@vinimontelo"),
-                new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@marangoni014"),
-                new TimesFutebol("Barcelona", "Camp Nou", "@luishenriquexz"),
-                new TimesFutebol("Bayern München", "Allianz Arena", "@luishenriquexz"),
-                new TimesFutebol("Arsenal", "Emirates Stadium", "@jhonathan_._"),
-                new TimesFutebol("Arsenal", "Emirates Stadium", "@toynho96"),
-                new TimesFutebol("Barcelona", "Camp Nou", "@pewternine"),
-                new TimesFutebol("Sport Recife", "Ilha do Retiro", "@j_ruan77"),
-                new TimesFutebol("Corinthians", "Neo Química Arena", "@thomasjr007"),
-                new TimesFutebol("Bayern München", "Allianz Arena", "@glauber760"),
-                new TimesFutebol("Inter de Milão", "San Siro", "@danielmods17"),
-                new TimesFutebol("Corinthians", "Neo Química Arena", "@ge.kk"),
-                new TimesFutebol("Manchester United", "Old Trafford", "@sueldoqueiroz"),
-                new TimesFutebol("PSG", "Parc des Princes", "@salvee_kzinn"),
-                new TimesFutebol("Flamengo", "Maracanã", "@jpmesquita12"),
-                new TimesFutebol("Chelsea", "Stamford Bridge", "@guizin_1323"),
-                new TimesFutebol("Palmeiras", "Allianz Parque", "@jotace1431_10211"),
-                new TimesFutebol("Palmeiras", "Allianz Parque", "@astakun1206"),
-                new TimesFutebol("Napoli", "Diego Armando Maradona", "@supremo5478"),
-                new TimesFutebol("Milan", "San Siro", "@inoccent_zero_39543"),
-                new TimesFutebol("Liverpool", "Anfield", "@Lanzzo")
+                new TimesFutebol("Real Madrid", "Santiago Bernabéu", "@indiomala"),
+                new TimesFutebol("Manchester City", "Etihad Stadium", "@marangoni014"),
+                new TimesFutebol("Manchester City", "Etihad Stadium", "@toynho96"),
+                new TimesFutebol("Barcelona", "Camp Nou", "@silva_osk89"),
+                new TimesFutebol("Barcelona", "Camp Nou", "@danielmods17"),
+                new TimesFutebol("Benfica", "Estádio da Luz", "@1_aeon"),
+                new TimesFutebol("Flamengo", "Maracanã", "@fleeif"),
+                new TimesFutebol("Paysandu", "Estádio da Curuzu", "@elrafa.07"),
+                new TimesFutebol("Napoli", "Stadio Diego Armando Maradona", "@mosquitopesedition"),
+                new TimesFutebol("Inter de Milão", "San Siro", "@gladstoneo085"),
+                new TimesFutebol("Inter de Milão", "San Siro", "@inoccent_zero_39543"),
+                new TimesFutebol("Arsenal", "Emirates Stadium", "@glauber760"),
+                new TimesFutebol("Arsenal", "Emirates Stadium", "@savitar066"),
+                new TimesFutebol("Bayern de Munique", "Allianz Arena", "@jotace1431_10211"),
+                new TimesFutebol("Bayern de Munique", "Allianz Arena", "@astakun1206"),
+                new TimesFutebol("Liverpool", "Anfield", "@luishenriquexz"),
+                new TimesFutebol("Liverpool", "Anfield", "@pewternine"),
+                new TimesFutebol("Manchester United", "Old Trafford", "@jpgl_14"),
+                new TimesFutebol("Al Nassr", "Mrsool Park", "@raiel13"),
+                new TimesFutebol("Bayer Leverkusen", "BayArena", "@vinimontelo."),
+                new TimesFutebol("Tottenham", "Tottenham Hotspur Stadium", "@fabiano6784"),
+                new TimesFutebol("Atlético de Madrid", "Wanda Metropolitano", "@jwlas.0.__")
                 ));
 
         Map<String, Integer> jogosEmCasa = new HashMap<>();
@@ -40,7 +173,7 @@ public class SorteioCopaCampeoes {
         }
 
         List<Rodada> rodadas = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 8; i++) {
             rodadas.add(new Rodada(i));
         }
 
@@ -63,7 +196,7 @@ public class SorteioCopaCampeoes {
 
                 if (confrontosRealizados.contains(confronto) || confrontosRealizados.contains(confrontoInvertido)) continue;
 
-                if (jogosEmCasa.get(chaveCasa) >= 2 || jogosFora.get(chaveFora) >= 2) continue;
+                if (jogosEmCasa.get(chaveCasa) >= 4 || jogosFora.get(chaveFora) >= 4) continue;
 
                 if (timesNaRodada.contains(chaveCasa) || timesNaRodada.contains(chaveFora)) continue;
 
@@ -100,6 +233,7 @@ public class SorteioCopaCampeoes {
         }
     }
 }
+*/
 
 /*
 package faseliga;
